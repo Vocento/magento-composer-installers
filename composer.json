@@ -1,0 +1,39 @@
+{
+    "name": "vocento/magento-composer-installers",
+    "type": "composer-plugin",
+    "license": "proprietary",
+    "description": "A magento Composer library installer",
+    "keywords": [
+        "installer",
+        "Magento",
+        "Magento core"
+    ],
+    "authors": [
+        {
+            "name": "Ariel Ferrandini",
+            "email": "aferrandini@vocento.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Vocento\\Composer\\Installers\\": "src/Vocento/Composer/Installers" }
+    },
+    "extra": {
+        "class": "Vocento\\Composer\\Installers\\Plugin"
+    },
+    "replace": {
+        "shama/baton": "*",
+        "roundcube/plugin-installer": "*"
+    },
+    "require": {
+        "symfony/finder": "^3.1",
+        "symfony/filesystem": "^3.1",
+        "composer-plugin-api": "^1.0"
+    },
+    "require-dev": {
+        "composer/composer": "1.0.*@dev",
+        "phpunit/phpunit": "4.1.*"
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
