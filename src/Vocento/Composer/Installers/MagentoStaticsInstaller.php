@@ -16,5 +16,4 @@ namespace Vocento\Composer\Installers;
  */
 final class MagentoStaticsInstaller extends MagentoInstaller
 {
-
 }
