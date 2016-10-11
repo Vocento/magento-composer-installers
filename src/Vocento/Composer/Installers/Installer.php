@@ -11,10 +11,13 @@
 
 namespace Vocento\Composer\Installers;
 
+use Composer\Composer;
+use Composer\Installer\BinaryInstaller;
 use Composer\Installer\LibraryInstaller;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Repository\InstalledRepositoryInterface;
+use Composer\Util\Filesystem;
 use Vocento\Composer\Installers\Exceptions\FileAlreadyExistsException;
 
 /**
@@ -22,12 +25,30 @@ use Vocento\Composer\Installers\Exceptions\FileAlreadyExistsException;
  */
 class Installer extends LibraryInstaller
 {
-
     const SUPPORTED_TYPES = array(
         'vocento-magento-core' => MagentoCoreInstaller::class,
         'vocento-magento-community' => MagentoCommunityInstaller::class,
         'vocento-magento-statics' => MagentoStaticsInstaller::class,
     );
+
+    /** @var PackageInstallerFactory */
+    private $packageInstallerFactory;
+
+    /**
+     * Installer constructor.
+     *
+     * @param IOInterface $io
+     * @param Composer $composer
+     * @param string $type
+     * @param Filesystem $filesystem
+     * @param BinaryInstaller $binaryInstaller
+     */
+    public function __construct(IOInterface $io, Composer $composer, $type, Filesystem $filesystem, BinaryInstaller $binaryInstaller)
+    {
+        parent::__construct($io, $composer, $type, $filesystem, $binaryInstaller);
+
+        $this->packageInstallerFactory = new PackageInstallerFactory(self::SUPPORTED_TYPES, $io, $composer);
+    }
 
     /**
      * {@inheritDoc}
@@ -36,13 +57,12 @@ class Installer extends LibraryInstaller
     {
         parent::install($repo, $package);
 
-
-        $packageInstaller  = $this->getPackageInstaller($package);
+        $packageInstaller = $this->getPackageInstaller($package);
 
         try {
             $packageInstaller->install();
         } catch (FileAlreadyExistsException $e) {
-            parent::uninstall($repo ,$package);
+            parent::uninstall($repo, $package);
             throw $e;
         }
     }
@@ -87,9 +107,7 @@ class Installer extends LibraryInstaller
      */
     public function supports($packageType)
     {
-        $packageType = strtolower($packageType);
-
-        return array_key_exists($packageType, self::SUPPORTED_TYPES);
+        return $this->packageInstallerFactory->supports($packageType);
     }
 
     /**
@@ -97,8 +115,6 @@ class Installer extends LibraryInstaller
      */
     public function getPackageInstaller(PackageInterface $package)
     {
-        $class = self::SUPPORTED_TYPES[$package->getType()];
-
-        return new $class($package, $this->composer, $this->getIO());
+        return $this->packageInstallerFactory->create($package);
     }
 }

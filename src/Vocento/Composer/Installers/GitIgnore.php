@@ -11,38 +11,38 @@
 
 namespace Vocento\Composer\Installers;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 /**
  * @author  Emilio Fernández <efernandez@vocento.com>
  * @author  Jorge Marquez <jmarquezz@paradigmadigital.com>
  */
 class GitIgnore
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $lines = array();
-    /**
-     * @var string|null
-     */
+
+    /** @var string */
     protected $gitIgnoreLocation;
-    /**
-     * @var bool
-     */
+
+    /** @var bool */
     protected $hasChanges = false;
-    
+
+    /** @var Filesystem */
+    private $filesystem;
+
     /**
      * @param string $fileLocation
      */
-    public function __construct($fileLocation, $filesystem)
+    public function __construct($fileLocation,Filesystem $filesystem)
     {
-        $this->gitIgnoreLocation = $fileLocation.DIRECTORY_SEPARATOR.'.gitignore';
-        if (file_exists($this->gitIgnoreLocation)) {
+        $this->filesystem = $filesystem;
+        $this->gitIgnoreLocation = $fileLocation . DIRECTORY_SEPARATOR . '.gitignore';
+        if ($this->filesystem->exists($this->gitIgnoreLocation)) {
             $this->lines = $this->removeDuplicates(file($this->gitIgnoreLocation, FILE_IGNORE_NEW_LINES));
-        } else {
-            $filesystem->touch($this->gitIgnoreLocation);
         }
     }
-    
+
     /**
      * @param string $file
      */
@@ -51,10 +51,10 @@ class GitIgnore
         $file = $this->prependSlashIfNotExist($file);
         if (!in_array($file, $this->lines)) {
             $this->lines[] = $file;
+            $this->hasChanges = true;
         }
-        $this->hasChanges = true;
     }
-    
+
     /**
      * @param array $files
      */
@@ -64,7 +64,7 @@ class GitIgnore
             $this->addEntry($file);
         }
     }
-    
+
     /**
      * @param string $file
      */
@@ -79,7 +79,7 @@ class GitIgnore
             $this->lines = array_values($this->lines);
         }
     }
-    
+
     /**
      * @param array $files
      */
@@ -89,7 +89,7 @@ class GitIgnore
             $this->removeEntry($file);
         }
     }
-    
+
     /**
      * @return array
      */
@@ -97,17 +97,26 @@ class GitIgnore
     {
         return $this->lines;
     }
-    
+
     /**
      * Write the file
      */
-    
     public function write()
     {
         if ($this->hasChanges) {
-            file_put_contents($this->gitIgnoreLocation, implode("\n", $this->lines));
+            if (!$this->filesystem->exists($this->gitIgnoreLocation)) {
+                $this->filesystem->touch($this->gitIgnoreLocation);
+                $this->filesystem->dumpFile($this->gitIgnoreLocation, implode("\n", $this->lines));
+            } else {
+                if (count($this->lines) == 0) {
+                    $this->filesystem->remove($this->gitIgnoreLocation);
+                } else {
+                    $this->filesystem->dumpFile($this->gitIgnoreLocation, implode("\n", $this->lines));
+                }
+            }
         }
     }
+
     /**
      * Prepend a forward slash to a path
      * if it does not already start with one.
@@ -119,6 +128,7 @@ class GitIgnore
     {
         return sprintf('/%s', ltrim($file, '/'));
     }
+
     /**
      * Removes duplicate patterns from the input array, without touching comments, line breaks etc.
      * Will remove the last duplicate pattern.

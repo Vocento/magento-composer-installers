@@ -44,7 +44,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
 
     /** @var GitIgnore */
     private $gitIgnore;
-
+    
     /**
      * MagentoInstaller constructor.
      * @param PackageInterface|null $package
@@ -76,7 +76,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             $this->excludedFiles = array_merge($this->excludedFiles, $configExcludedFiles);
         }
 
-        $this->gitIgnore = new GitIgnore($this->baseDir,$this->filesystem);
+        $this->gitIgnore = new GitIgnore($this->baseDir, $this->filesystem);
 
 
     }
