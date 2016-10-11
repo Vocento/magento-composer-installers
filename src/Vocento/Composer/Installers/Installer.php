@@ -22,6 +22,13 @@ use Vocento\Composer\Installers\Exceptions\FileAlreadyExistsException;
  */
 class Installer extends LibraryInstaller
 {
+
+    const SUPPORTED_TYPES = array(
+        'vocento-magento-core' => MagentoCoreInstaller::class,
+        'vocento-magento-community' => MagentoCommunityInstaller::class,
+        'vocento-magento-statics' => MagentoStaticsInstaller::class,
+    );
+
     /**
      * {@inheritDoc}
      */
@@ -29,10 +36,11 @@ class Installer extends LibraryInstaller
     {
         parent::install($repo, $package);
 
-        $magentoInstaller = new MagentoCoreInstaller($package, $this->composer, $this->getIO());
+
+        $packageInstaller  = $this->getPackageInstaller($package);
 
         try {
-            $magentoInstaller->install();
+            $packageInstaller->install();
         } catch (FileAlreadyExistsException $e) {
             parent::uninstall($repo ,$package);
             throw $e;
@@ -44,8 +52,8 @@ class Installer extends LibraryInstaller
      */
     public function uninstall(InstalledRepositoryInterface $repo, PackageInterface $package)
     {
-        $magentoInstaller = new MagentoCoreInstaller($package, $this->composer, $this->getIO());
-        $magentoInstaller->uninstall();
+        $packageInstaller = $this->getPackageInstaller($package);
+        $packageInstaller->uninstall();
 
         parent::uninstall($repo, $package);
     }
@@ -55,13 +63,13 @@ class Installer extends LibraryInstaller
      */
     public function update(InstalledRepositoryInterface $repo, PackageInterface $initial, PackageInterface $target)
     {
-        $magentoInstaller = new MagentoCoreInstaller($initial, $this->composer, $this->getIO());
-        $magentoInstaller->uninstall();
+        $packageInstaller = $this->getPackageInstaller($initial);
+        $packageInstaller->uninstall();
 
         parent::update($repo, $initial, $target);
 
-        $magentoInstaller = new MagentoCoreInstaller($target, $this->composer, $this->getIO());
-        $magentoInstaller->install();
+        $packageInstaller = $this->getPackageInstaller($target);
+        $packageInstaller->install();
     }
 
     /**
@@ -79,6 +87,18 @@ class Installer extends LibraryInstaller
      */
     public function supports($packageType)
     {
-        return 'vocento-magento-core' === $packageType;
+        $packageType = strtolower($packageType);
+
+        return array_key_exists($packageType, self::SUPPORTED_TYPES);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPackageInstaller(PackageInterface $package)
+    {
+        $class = self::SUPPORTED_TYPES[$package->getType()];
+
+        return new $class($package, $this->composer, $this->getIO());
     }
 }

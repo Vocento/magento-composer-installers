@@ -12,9 +12,9 @@
 namespace Vocento\Composer\Installers;
 
 /**
- * @author Emilio Fernández <efernandez@vocento.com>
+ * @author Emilio Fernández<efernandez@vocento.com>
  */
-final class MagentoCoreInstaller extends MagentoInstaller
+final class MagentoCommunityInstaller extends MagentoInstaller
 {
 
 }

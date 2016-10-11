@@ -101,12 +101,31 @@ class InstallerTest extends TestCase
     }
 
     /**
+     * testInstallerClass
+     *
+     * @dataProvider dataTestInstallerClass
+     */
+    public function testInstallerClass($type, $class)
+    {
+        $installer = new Installer($this->io, $this->composer);
+        $package = new Package('package-name', 'test-version', 'test-version');
+
+        $package->setType($type);
+        $packageInstaller = $installer->getPackageInstaller($package);
+
+        $this->assertInstanceOf('Vocento\Composer\Installers\MagentoInstallerInterface', $packageInstaller);
+        $this->assertInstanceOf($class, $packageInstaller);
+    }
+
+    /**
      * dataForTestSupport
      */
     public function dataForTestSupport()
     {
         return array(
             array('vocento-magento-core', true),
+            array('vocento-magento-community', true),
+            array('vocento-magento-statics', true),
             array('magento', false)
         );
     }
@@ -118,6 +137,18 @@ class InstallerTest extends TestCase
     {
         return array(
             array('magento-core', '/vocento/magento-core', 'vocento/magento-core')
+        );
+    }
+
+    /**
+     * dataTestInstallerClass
+     */
+    public function dataTestInstallerClass()
+    {
+        return array(
+            array('vocento-magento-core', 'Vocento\Composer\Installer\MagentoCoreInstaller'),
+            array('vocento-magento-community', 'Vocento\Composer\Installer\MagentoCommunityInstaller'),
+            array('vocento-magento-statics', 'Vocento\Composer\Installer\MagentoStaticsInstaller'),
         );
     }
 }

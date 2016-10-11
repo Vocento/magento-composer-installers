@@ -12,9 +12,17 @@
 namespace Vocento\Composer\Installers;
 
 /**
- * @author Emilio Fernández <efernandez@vocento.com>
+ * @author Ariel Ferrandini <aferrandini@vocento.com>
  */
-final class MagentoCoreInstaller extends MagentoInstaller
+interface MagentoInstallerInterface
 {
+    /**
+     * Installs the package
+     */
+    public function install();
 
+    /**
+     * Installs the package
+     */
+    public function uninstall();
 }
