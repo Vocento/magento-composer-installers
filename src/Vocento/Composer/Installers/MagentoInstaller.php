@@ -28,10 +28,10 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
     private $baseDir;
 
     /** @var Composer */
-    private $composer;
+    protected $composer;
 
     /** @var array */
-    private $excludedFiles;
+    protected $excludedFiles;
 
     /** @var IOInterface */
     private $io;

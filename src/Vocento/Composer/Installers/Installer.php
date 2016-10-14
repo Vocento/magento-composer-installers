@@ -45,7 +45,7 @@ class Installer extends LibraryInstaller
      */
     public function __construct(IOInterface $io, Composer $composer, $type, Filesystem $filesystem, BinaryInstaller $binaryInstaller)
     {
-        parent::__construct($io, $composer, $type, $filesystem, $binaryInstaller);
+        parent::__construct($io, $composer, $type);
 
         $this->packageInstallerFactory = new PackageInstallerFactory(self::SUPPORTED_TYPES, $io, $composer);
     }

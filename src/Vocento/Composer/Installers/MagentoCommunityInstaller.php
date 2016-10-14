@@ -11,9 +11,28 @@
 
 namespace Vocento\Composer\Installers;
 
+use Composer\Composer;
+use Composer\IO\IOInterface;
+use Composer\Package\PackageInterface;
+
 /**
  * @author Emilio Fernández<efernandez@vocento.com>
  */
 final class MagentoCommunityInstaller extends MagentoInstaller
 {
+    /**
+     * MagentoCommunityInstaller constructor.
+     * @param PackageInterface|null $package
+     * @param Composer|null $composer
+     * @param IOInterface|null $io
+     */
+    public function __construct(PackageInterface $package = null, Composer $composer = null, IOInterface $io = null)
+    {
+        parent::__construct($package, $composer, $io);
+
+        $configExcludedFiles = $this->composer->getConfig()->get('exclude-magento-community-files');
+        if (is_array($configExcludedFiles)) {
+            $this->excludedFiles = array_merge($this->excludedFiles, $configExcludedFiles);
+        }
+    }
 }
