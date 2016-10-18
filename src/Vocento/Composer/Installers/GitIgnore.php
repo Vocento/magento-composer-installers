@@ -49,6 +49,7 @@ class GitIgnore
     public function addEntry($file)
     {
         $file = $this->prependSlashIfNotExist($file);
+        $file = $this->addWindowsCompatibility($file);
         if (!in_array($file, $this->lines)) {
             $this->lines[] = $file;
             $this->hasChanges = true;
@@ -127,6 +128,17 @@ class GitIgnore
     private function prependSlashIfNotExist($file)
     {
         return sprintf('/%s', ltrim($file, '/'));
+    }
+
+    /**
+     * Replaces backslash with slash for windows compatibility
+     *
+     * @param string $file
+     * @return string
+     */
+    private function addWindowsCompatibility($file)
+    {
+        return strtr($file, array('\\' => '/'));
     }
 
     /**
