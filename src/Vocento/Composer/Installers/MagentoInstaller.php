@@ -67,8 +67,11 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         $this->baseDir = $baseDir;
 
         $this->excludedFiles = [
-            'composer.json',
+            '.env',
             '.gitignore',
+            'composer.json',
+            'composer.lock',
+            'phpunit.xml.dist',
         ];
 
         $configExcludedFiles = $this->composer->getConfig()->get('exclude-magento-files');
