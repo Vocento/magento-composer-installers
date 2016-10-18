@@ -17,6 +17,8 @@ custom installer to handle it.
 | Framework    | Types
 | ---------    | -----
 | Magento      | `vocento-magento-core`
+| Magento      | `vocento-magento-community`
+| Magento      | `vocento-magento-statics`
 
 ## Example `composer.json` File
 
@@ -37,3 +39,38 @@ to load the custom installers.
 
 This would install your package to the root path when a user runs `php composer.phar install`.
 
+## Extra Configurations
+
+This package has the possibility of setup some extra configurations related to ignoring files on the install proccesses of the packages. There is a general configuration to exclude files from all packages that will be installed, and there are three configurations to exclude files for each package that can be installed. 
+
+The names for the general exclude files configuration and for the three supported packages types configurations are:
+
+- `exclude-magento-files`
+- `exclude-magento-core-files`
+- `exclude-magento-community-files`
+- `exclude-magento-statics-files`
+
+You can add custom exclude-file configurations to your own custom installers.
+
+You can use these extra configurations adding a config node with these names and the files to be excluded on the
+composer.json file. Example:
+
+```json
+{
+    "name": "vocento/magento-core",
+    "type": "vocento-magento-core",
+    "require": {
+        "vocento/magento-composer-installers": "~1.0"
+    },
+    "config": {
+        "exclude-magento-files": [
+          "excluded all packages file1",
+          "excluded all packages file2"
+        ],
+        "exclude-magento-core-files": [
+          "excluded magento core file1",
+          "excluded magento core file2"
+        ]
+    }
+}
+```
