@@ -167,7 +167,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             $targetFile = $this->baseDir.DIRECTORY_SEPARATOR.$file->getRelativePathname();
 
             $this->io->write('  - Removing file <info>'.$file->getRelativePathname().'</info>');
-            $this->filesystem->remove($targetFile);
+            $this->removeFile($targetFile);
 
             $this->io->write('  - Removing file <info>'.$file->getRelativePathname().'</info> from .gitignore file');
 
@@ -176,5 +176,32 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         }
         // Dump .gitignore buffer into .gitignore file
         $this->gitIgnore->write();
+    }
+
+    /**
+     * @param $targetFile
+     */
+    private function removeFile($targetFile)
+    {
+        $this->filesystem->remove($targetFile);
+        $targetDirectory = dirname($targetFile);
+
+        $this->removeEmptyDirectory($targetDirectory);
+    }
+
+    /**
+     * @param $targetDirectory
+     */
+    private function removeEmptyDirectory($targetDirectory)
+    {
+        if ($targetDirectory !== $this->baseDir && 0 === strpos($targetDirectory, $this->baseDir)) {
+            $finder = new Finder();
+            $finder->files()->in($targetDirectory);
+
+            if (0 === count($finder->files())) {
+                $this->filesystem->remove($targetDirectory);
+                $this->removeEmptyDirectory(dirname($targetDirectory));
+            }
+        }
     }
 }
