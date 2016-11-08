@@ -138,7 +138,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
     private function getFinder()
     {
         $finder = new Finder();
-        $finder->in($this->getInstallPath());
+        $finder->in($this->getInstallPath())->ignoreDotFiles(false)->ignoreVCS(true);
 
         return $finder;
     }
@@ -196,7 +196,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
     {
         if ($targetDirectory !== $this->baseDir && 0 === strpos($targetDirectory, $this->baseDir)) {
             $finder = new Finder();
-            $finder->files()->in($targetDirectory);
+            $finder->files()->in($targetDirectory)->ignoreDotFiles(false)->ignoreVCS(true);
 
             if (0 === count($finder->files())) {
                 $this->filesystem->remove($targetDirectory);
