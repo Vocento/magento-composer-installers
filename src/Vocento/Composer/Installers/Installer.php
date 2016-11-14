@@ -29,6 +29,7 @@ class Installer extends LibraryInstaller
         'vocento-magento-core' => MagentoCoreInstaller::class,
         'vocento-magento-community' => MagentoCommunityInstaller::class,
         'vocento-magento-statics' => MagentoStaticsInstaller::class,
+        'project' => MagentoProjectInstaller::class
     );
 
     /** @var PackageInstallerFactory */
