@@ -72,6 +72,16 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             'composer.json',
             'composer.lock',
             'phpunit.xml.dist',
+            'modman',
+            'php.ini.sample',
+            'index.php.sample',
+            '.htaccess.sample',
+            'README.md',
+            'RELEASE_NOTES.txt',
+            'LICENSE',
+            'LICENSE.html',
+            'LICENSE.txt',
+            'LICENSE_AFL.txt',
         ];
 
         $configExcludedFiles = $this->composer->getConfig()->get('exclude-magento-files');
