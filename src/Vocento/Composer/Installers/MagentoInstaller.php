@@ -75,6 +75,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             'modman',
             'php.ini.sample',
             'index.php.sample',
+            '.htaccess',
             '.htaccess.sample',
             'README.md',
             'RELEASE_NOTES.txt',
