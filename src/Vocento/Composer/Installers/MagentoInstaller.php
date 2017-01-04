@@ -44,7 +44,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
 
     /** @var GitIgnore */
     private $gitIgnore;
-    
+
     /**
      * MagentoInstaller constructor.
      * @param PackageInterface|null $package
@@ -69,6 +69,8 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         $this->excludedFiles = [
             '.env',
             '.gitignore',
+            '.coveralls.yml',
+            '.travis.yml',
             'composer.json',
             'composer.lock',
             'phpunit.xml.dist',
@@ -78,11 +80,14 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             '.htaccess',
             '.htaccess.sample',
             'README.md',
-            'RELEASE_NOTES.txt',
+            'CONDUCT.md',
+            'CHANGELOG.md',
+            'LICENSE.md',
             'LICENSE',
             'LICENSE.html',
             'LICENSE.txt',
             'LICENSE_AFL.txt',
+            'RELEASE_NOTES.txt',
         ];
 
         $configExcludedFiles = $this->composer->getConfig()->get('exclude-magento-files');
