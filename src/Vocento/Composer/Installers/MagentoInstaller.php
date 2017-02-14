@@ -91,6 +91,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             'LICENSE_AFL.txt',
             'RELEASE_NOTES.txt',
             'package.xml',
+            'build_package.sh',
         ];
 
         $configExcludedFiles = $this->composer->getConfig()->get('exclude-magento-files');
