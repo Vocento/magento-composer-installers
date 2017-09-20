@@ -151,6 +151,21 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         }
         // Dump .gitignore buffer into .gitignore file
         $this->gitIgnore->write();
+        //Remove package folder from vendor directory file after copy it.
+        $this->deletePackageFromVendorDirectory();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function deletePackageFromVendorDirectory()
+    {
+        $packageFolderInsideVendor = $this->composer->getConfig()->get('vendor-dir', 1);
+        $packagesFolderPath = explode(DIRECTORY_SEPARATOR,$this->package->getName());
+        foreach ($packagesFolderPath as $folder) {
+            $packageFolderInsideVendor .= DIRECTORY_SEPARATOR.$folder;
+        }
+        $this->filesystem->remove($packageFolderInsideVendor);
     }
 
     /**
