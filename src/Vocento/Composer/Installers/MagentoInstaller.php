@@ -165,6 +165,11 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         foreach ($packagesFolderPath as $folder) {
             $packageFolderInsideVendor .= DIRECTORY_SEPARATOR.$folder;
         }
+        $this->io->write('',1);
+        $this->io->write('      <info>Cleaning package files from vendor folder</info>');
+        $this->io->write('        - Deleting <info>'.$packageFolderInsideVendor.'</info> folder ');
+        $this->io->write('      <info>Package files from vendor folder deleted</info>');
+        $this->io->write('',1);
         $this->filesystem->remove($packageFolderInsideVendor);
     }
 
