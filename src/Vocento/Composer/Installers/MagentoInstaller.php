@@ -115,7 +115,7 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
 
     public function install()
     {
-        $this->io->write('<info>Installing package files</info>');
+        $this->io->write('      <info>Installing package files</info>');
 
         $finder = $this->getFinder();
 
@@ -139,18 +139,19 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
             }
 
             $targetFile = $this->baseDir.DIRECTORY_SEPARATOR.$file->getRelativePathname();
-            $this->io->write('  - Copying file <info>'.$file->getRelativePathname().'</info>');
+            $this->io->write('        - Copying file <info>'.$file->getRelativePathname().'</info>');
 
             // Copy file
             $this->filesystem->copy($file->getRealPath(), $targetFile);
 
-            $this->io->write('  - Adding file <info>'.$file->getRelativePathname().'</info> to .gitignore file');
+            $this->io->write('        - Adding file <info>'.$file->getRelativePathname().'</info> to .gitignore file');
 
             // Add file to .gitignore buffer
             $this->gitIgnore->addEntry($file->getRelativePathname());
         }
         // Dump .gitignore buffer into .gitignore file
         $this->gitIgnore->write();
+        $this->io->write('      <info>Package files installed</info>');
         //Remove package folder from vendor directory file after copy it.
         $this->deletePackageFromVendorDirectory();
     }
