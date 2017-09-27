@@ -42,6 +42,12 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
     /** @var Filesystem */
     private $filesystem;
 
+    /** @var VendorMagePackageFoldersPathsFile */
+    private $vendorMagePackageFolderPath;
+
+    /** @var VendorMagePackageFoldersPathsFile */
+    private $vendorMagePackageFoldersPathsFile;
+
     /** @var GitIgnore */
     private $gitIgnore;
 
@@ -110,7 +116,24 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         }
 
         $this->gitIgnore = new GitIgnore($this->baseDir, $this->filesystem);
+
+        $this->vendorMagePackageFolderPath = $this->getVendorMagePackageFolderPath();
+
+        $this->vendorMagePackageFoldersPathsFile = new VendorMagePackageFoldersPathsFile($this->composer->getConfig()->get('vendor-dir', 1), $this->filesystem);
         
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function getVendorMagePackageFolderPath()
+    {
+        $magePackageFolderInsideVendor = $this->composer->getConfig()->get('vendor-dir', 1);
+        $packageFolderPath = explode(DIRECTORY_SEPARATOR,$this->package->getName());
+        foreach ($packageFolderPath as $folder) {
+            $magePackageFolderInsideVendor .= DIRECTORY_SEPARATOR.$folder;
+        }
+        return $magePackageFolderInsideVendor;
     }
 
     public function install()
@@ -152,27 +175,14 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         // Dump .gitignore buffer into .gitignore file
         $this->gitIgnore->write();
         $this->io->write('      <info>Package files installed</info>');
-        //Remove package folder from vendor directory file after copy it.
-        $this->deletePackageFromVendorDirectory();
+
+        // Add package folder path inside vendor directory to vendorMagePackageFoldersPaths.txt buffer
+        $this->vendorMagePackageFoldersPathsFile->addEntry($this->vendorMagePackageFolderPath);
+        // Dump vendorMagePackageFoldersPaths.txt buffer into vendorMagePackageFoldersPaths.txt file
+        $this->vendorMagePackageFoldersPathsFile->write();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    private function deletePackageFromVendorDirectory()
-    {
-        $packageFolderInsideVendor = $this->composer->getConfig()->get('vendor-dir', 1);
-        $packagesFolderPath = explode(DIRECTORY_SEPARATOR,$this->package->getName());
-        foreach ($packagesFolderPath as $folder) {
-            $packageFolderInsideVendor .= DIRECTORY_SEPARATOR.$folder;
-        }
-        $this->io->write('',1);
-        $this->io->write('      <info>Cleaning package files from vendor folder</info>');
-        $this->io->write('        - Deleting <info>'.$packageFolderInsideVendor.'</info> folder ');
-        $this->io->write('      <info>Package files from vendor folder deleted</info>');
-        $this->io->write('',1);
-        $this->filesystem->remove($packageFolderInsideVendor);
-    }
+
 
     /**
      * {@inheritDoc}
@@ -226,6 +236,11 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
         }
         // Dump .gitignore buffer into .gitignore file
         $this->gitIgnore->write();
+
+        // Remove package folder path inside vendor directory from vendorMagePackageFoldersPaths.txt buffer
+        $this->vendorMagePackageFoldersPathsFile->removeEntry($this->vendorMagePackageFolderPath);
+        // Dump vendorMagePackageFoldersPaths.txt buffer into vendorMagePackageFoldersPaths.txt file
+        $this->vendorMagePackageFoldersPathsFile->write();
     }
 
     /**
