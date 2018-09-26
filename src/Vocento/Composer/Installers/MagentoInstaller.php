@@ -144,25 +144,18 @@ abstract class MagentoInstaller implements MagentoInstallerInterface
 
         foreach ($finder->files() as $file) {
             if ($this->isExcludedFile($file->getRelativePathname())) {
-                // Exclude file
-                continue;
-            }
-
-            $targetFile = $this->baseDir.DIRECTORY_SEPARATOR.$file->getRelativePathname();
-
-            if ($this->filesystem->exists($targetFile)) {
-                throw new FileAlreadyExistsException($file->getRelativePathname());
-            }
-        }
-
-        foreach ($finder->files() as $file) {
-            if ($this->isExcludedFile($file->getRelativePathname())) {
                 // Excluded file
                 continue;
             }
 
             $targetFile = $this->baseDir.DIRECTORY_SEPARATOR.$file->getRelativePathname();
             $this->io->write('        - Copying file <info>'.$file->getRelativePathname().'</info>');
+
+            if ($this->filesystem->exists($targetFile)) {
+                //throw new FileAlreadyExistsException($file->getRelativePathname());
+                $this->io->write($targetFile.' exists. Skipping');
+                continue;
+            }
 
             // Copy file
             $this->filesystem->copy($file->getRealPath(), $targetFile);
